@@ -70,7 +70,7 @@ function ToastItem({ toast, onRemove }: { toast: ToastMessage; onRemove: (id: st
       <span style={{ flex: 1, fontSize: 13, lineHeight: 1.5, color: '#e5e7eb' }}>{toast.message}</span>
       <button
         onClick={() => onRemove(toast.id)}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', padding: 0, flexShrink: 0 }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: 0, flexShrink: 0 }}
       >
         <X size={14} />
       </button>

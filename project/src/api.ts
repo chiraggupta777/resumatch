@@ -47,6 +47,15 @@ const api = {
     const data = await handleResponse(res);
     return { data };
   },
+
+  async delete(path: string) {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    });
+    const data = await handleResponse(res);
+    return { data };
+  },
 };
 
 export default api;

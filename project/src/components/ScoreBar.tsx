@@ -29,7 +29,7 @@ export default function ScoreBar({ value, color, height = 6, animate = true }: S
       width: '100%',
       height,
       borderRadius: height,
-      backgroundColor: '#1e1e2e',
+      backgroundColor: '#e2e8f0',
       overflow: 'hidden',
     }}>
       <div style={{

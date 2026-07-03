@@ -27,7 +27,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
         fontSize: 14,
         fontWeight: 600,
         backgroundColor: active ? '#6366f1' : hover ? '#1a1a24' : 'transparent',
-        color: active ? '#fff' : hover ? '#d1d5db' : '#6b7280',
+        color: active ? '#fff' : hover ? '#374151' : '#64748b',
         transition: 'all 0.2s ease',
       }}
     >
@@ -41,9 +41,9 @@ function inputStyle(focused: boolean): React.CSSProperties {
     width: '100%',
     padding: '10px 14px',
     borderRadius: 10,
-    border: `1px solid ${focused ? '#6366f1' : '#1e1e2e'}`,
-    backgroundColor: '#0a0a0f',
-    color: '#fff',
+    border: `1px solid ${focused ? '#6366f1' : '#e2e8f0'}`,
+    backgroundColor: '#f0efea',
+    color: '#1a1a1a',
     fontSize: 14,
     outline: 'none',
     transition: 'border-color 0.2s ease',
@@ -248,7 +248,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: '#f0efea', minHeight: '100vh' }}>
       <Navbar />
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
         {/* Mode tabs */}
@@ -258,8 +258,8 @@ export default function Dashboard() {
             gap: 4,
             padding: 4,
             borderRadius: 999,
-            backgroundColor: '#111118',
-            border: '1px solid #1e1e2e',
+            backgroundColor: '#f0efea',
+            border: '1px solid #e2e8f0',
           }}>
             <TabButton active={mode === 'match'} onClick={() => { setMode('match'); resetAll(); }}>
               🎯 Resume Matcher
@@ -336,19 +336,19 @@ function MatchMode(props: MatchModeProps) {
     className="match-grid">
       {/* Left panel */}
       <div style={{
-        backgroundColor: '#111118',
-        border: '1px solid #1e1e2e',
+        backgroundColor: '#ffffff',
+        border: '1px solid #e2e8f0',
         borderRadius: 20,
         padding: '28px 24px',
       }}>
-        <h2 style={{ margin: '0 0 6px', fontSize: 20, fontWeight: 700, color: '#fff' }}>Analyze Your Resume</h2>
-        <p style={{ margin: '0 0 24px', fontSize: 14, color: '#6b7280', lineHeight: 1.6 }}>
+        <h2 style={{ margin: '0 0 6px', fontSize: 20, fontWeight: 700, color: '#1a1a1a' }}>Analyze Your Resume</h2>
+        <p style={{ margin: '0 0 24px', fontSize: 14, color: '#64748b', lineHeight: 1.6 }}>
           Upload your PDF and paste the job description to get your AI match report.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           <div>
-            <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 500, color: '#d1d5db' }}>
+            <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 500, color: '#374151' }}>
               Resume PDF
             </label>
             <ResumeUploader file={props.file} onFileChange={props.onFileChange} error={props.fileError} />
@@ -399,7 +399,7 @@ function MatchMode(props: MatchModeProps) {
       {showResults && (
         <div>
           {props.streaming ? (
-            <StreamingPanel stage={props.streamStage} text={props.streamedText} />
+            <StreamingPanel stage={props.streamStage} text="" />
           ) : props.matchResult ? (
             <MatchResultPanel result={props.matchResult} onReset={props.onReset} />
           ) : null}
@@ -419,20 +419,20 @@ function ScoreMode(props: ScoreModeProps) {
   return (
     <div style={{ maxWidth: 560, margin: '0 auto' }}>
       {props.streaming ? (
-        <StreamingPanel stage={props.streamStage} text={props.streamedText} />
+        <StreamingPanel stage={props.streamStage} text="" />
       ) : props.scoreResult ? (
         <ScoreResultPanel result={props.scoreResult} onReset={props.onReset} />
       ) : (
         <div style={{
-          backgroundColor: '#111118',
-          border: '1px solid #1e1e2e',
+          backgroundColor: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: 20,
           padding: '32px 28px',
         }}>
-          <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center' }}>
+          <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#1a1a1a', textAlign: 'center' }}>
             Get Your Resume Score
           </h2>
-          <p style={{ margin: '0 0 28px', fontSize: 14, color: '#6b7280', textAlign: 'center', lineHeight: 1.6 }}>
+          <p style={{ margin: '0 0 28px', fontSize: 14, color: '#64748b', textAlign: 'center', lineHeight: 1.6 }}>
             Upload your resume and get an overall strength score — no job description needed.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>

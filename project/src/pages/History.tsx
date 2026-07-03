@@ -26,8 +26,8 @@ function FilterTab({ active, onClick, children }: { active: boolean; onClick: ()
         cursor: 'pointer',
         fontSize: 13,
         fontWeight: 500,
-        backgroundColor: active ? '#1e1e2e' : hover ? '#111118' : 'transparent',
-        color: active ? '#fff' : hover ? '#d1d5db' : '#6b7280',
+        backgroundColor: active ? '#e2e8f0' : hover ? '#ffffff' : 'transparent',
+        color: active ? '#1a1a1a' : hover ? '#374151' : '#64748b',
         transition: 'all 0.2s ease',
       }}
     >
@@ -63,17 +63,57 @@ export default function History() {
     return item.type === filter;
   });
 
+  const handleDeleteItem = async (id: string) => {
+    if (!window.confirm('Delete this history entry?')) return;
+
+    try {
+      await api.delete(`/api/analysis/history/${id}`);
+      setItems((prev) => prev.filter((item) => item._id !== id));
+    } catch (err: any) {
+      addToast('Could not delete history item. Try again.', 'error');
+    }
+  };
+
+  const handleClearHistory = async () => {
+    if (!window.confirm('Clear all history? This cannot be undone.')) return;
+
+    try {
+      await api.delete('/api/analysis/history');
+      setItems([]);
+    } catch (err: any) {
+      addToast('Could not clear history. Try again.', 'error');
+    }
+  };
+
   return (
-    <div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: '#f0efea', minHeight: '100vh' }}>
       <Navbar />
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 24px' }}>
-        <div style={{ marginBottom: 28 }}>
-          <h1 style={{ margin: '0 0 6px', fontSize: 26, fontWeight: 700, color: '#fff', letterSpacing: '-0.5px' }}>
+<div style={{ marginBottom: 28, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div>
+          <h1 style={{ margin: '0 0 6px', fontSize: 26, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.5px' }}>
             Analysis History
           </h1>
-          <p style={{ margin: 0, fontSize: 15, color: '#6b7280' }}>
+          <p style={{ margin: 0, fontSize: 15, color: '#64748b' }}>
             All your past resume analyses, newest first.
           </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleClearHistory}
+          style={{
+            padding: '10px 16px',
+            borderRadius: 10,
+            border: '1px solid #e2e8f0',
+            backgroundColor: '#ffffff',
+            color: '#374151',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          Clear History
+        </button>
         </div>
 
         {/* Filter tabs */}
@@ -82,8 +122,8 @@ export default function History() {
           gap: 4,
           marginBottom: 24,
           padding: 4,
-          backgroundColor: '#111118',
-          border: '1px solid #1e1e2e',
+          backgroundColor: '#f0efea',
+          border: '1px solid #e2e8f0',
           borderRadius: 10,
           width: 'fit-content',
         }}>
@@ -103,7 +143,7 @@ export default function History() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {filtered.map((item) => (
-              <HistoryCard key={item._id} item={item} />
+              <HistoryCard key={item._id} item={item} onDelete={item._id ? handleDeleteItem : undefined} />
             ))}
           </div>
         )}
@@ -120,8 +160,8 @@ function EmptyState({ hasItems }: { hasItems: boolean }) {
         width: 60,
         height: 60,
         borderRadius: 16,
-        backgroundColor: '#111118',
-        border: '1px solid #1e1e2e',
+        backgroundColor: '#ffffff',
+        border: '1px solid #e2e8f0',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -130,10 +170,10 @@ function EmptyState({ hasItems }: { hasItems: boolean }) {
       }}>
         📋
       </div>
-      <h3 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 600, color: '#fff' }}>
+      <h3 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 600, color: '#1a1a1a' }}>
         {hasItems ? 'No results for this filter' : 'No analyses yet.'}
       </h3>
-      <p style={{ margin: '0 0 24px', fontSize: 14, color: '#6b7280' }}>
+      <p style={{ margin: '0 0 24px', fontSize: 14, color: '#64748b' }}>
         {hasItems ? 'Try a different filter above.' : 'Run your first resume analysis to see it here.'}
       </p>
       {!hasItems && (

@@ -15,9 +15,9 @@ function NavButton({ children, filled, to }: { children: React.ReactNode; filled
         fontSize: 14,
         fontWeight: 500,
         textDecoration: 'none',
-        border: filled ? 'none' : '1px solid #1e1e2e',
-        backgroundColor: filled ? (hover ? '#4f46e5' : '#6366f1') : (hover ? '#111118' : 'transparent'),
-        color: '#fff',
+        border: filled ? 'none' : '1px solid #e2e8f0',
+        backgroundColor: filled ? (hover ? '#4f46e5' : '#6366f1') : (hover ? '#ffffff' : 'transparent'),
+        color: filled ? '#fff' : '#1a1a1a',
         transition: 'all 0.2s ease',
       }}
     >
@@ -35,8 +35,8 @@ function FeatureCard({ icon: Icon, title, desc }: { icon: React.ElementType; tit
       style={{
         flex: 1,
         minWidth: 240,
-        backgroundColor: '#111118',
-        border: `1px solid ${hover ? '#2e2e3e' : '#1e1e2e'}`,
+        backgroundColor: '#ffffff',
+        border: `1px solid ${hover ? '#cbd5e1' : '#e2e8f0'}`,
         borderRadius: 18,
         padding: '28px 24px',
         transition: 'all 0.2s ease',
@@ -56,7 +56,7 @@ function FeatureCard({ icon: Icon, title, desc }: { icon: React.ElementType; tit
       }}>
         <Icon size={22} color="#6366f1" />
       </div>
-      <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: '#fff' }}>{title}</h3>
+      <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: '#1a1a1a' }}>{title}</h3>
       <p style={{ margin: 0, fontSize: 14, color: '#6b7280', lineHeight: 1.6 }}>{desc}</p>
     </div>
   );
@@ -85,7 +85,7 @@ function StepCard({ num, title, desc }: { num: number; title: string; desc: stri
         flexShrink: 0,
       }}>{num}</div>
       <div>
-        <h4 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 600, color: '#fff' }}>{title}</h4>
+        <h4 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 600, color: '#1a1a1a' }}>{title}</h4>
         <p style={{ margin: 0, fontSize: 14, color: '#6b7280', lineHeight: 1.6 }}>{desc}</p>
       </div>
     </div>
@@ -96,17 +96,20 @@ export default function Landing() {
   const [ctaHover, setCtaHover] = useState(false);
   const [ctaHover2, setCtaHover2] = useState(false);
   const [bannerHover, setBannerHover] = useState(false);
+  const currentYear = new Date().getFullYear();
 
   return (
-    <div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', color: '#fff' }}>
+    <div style={{ backgroundColor: '#f0efea', minHeight: '100vh', color: '#1a1a1a' }}>
       {/* Navbar */}
       <nav style={{
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: 'rgba(10,10,15,0.9)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid #1e1e2e',
+        backgroundColor: 'rgba(255,255,255,0.82)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(15, 23, 42, 0.08)',
+        boxShadow: '0 1px 20px rgba(15, 23, 42, 0.04)',
       }}>
         <div style={{
           maxWidth: 1100,
@@ -130,7 +133,7 @@ export default function Landing() {
               fontSize: 16,
               color: '#fff',
             }}>R</div>
-            <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: '-0.3px' }}>ResuMatch</span>
+            <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: '-0.3px', color: '#1a1a1a' }}>ResuMatch</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <NavButton to="/login">Sign In</NavButton>
@@ -161,7 +164,7 @@ export default function Landing() {
           fontWeight: 800,
           lineHeight: 1.1,
           letterSpacing: '-1.5px',
-          color: '#fff',
+          color: '#1a1a1a',
         }}>
           Land More Interviews.<br />
           <span style={{ color: '#6366f1' }}>Match Your Resume</span> to<br />
@@ -172,7 +175,7 @@ export default function Landing() {
           margin: '0 auto 36px',
           maxWidth: 560,
           fontSize: 18,
-          color: '#9ca3af',
+          color: '#64748b',
           lineHeight: 1.7,
         }}>
           AI-powered resume analysis that shows your match score, missing keywords,
@@ -200,10 +203,14 @@ export default function Landing() {
           >
             Analyze My Resume <ArrowRight size={16} />
           </Link>
-          <Link
-            to="/login"
+          <a
+            href="#how-it-works"
             onMouseEnter={() => setCtaHover2(true)}
             onMouseLeave={() => setCtaHover2(false)}
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+            }}
             style={{
               padding: '13px 28px',
               borderRadius: 10,
@@ -211,13 +218,13 @@ export default function Landing() {
               fontWeight: 600,
               textDecoration: 'none',
               backgroundColor: ctaHover2 ? '#111118' : 'transparent',
-              border: '1px solid #1e1e2e',
-              color: '#d1d5db',
+              border: '1px solid #3b82f6',
+              color: '#2563eb',
               transition: 'all 0.2s ease',
             }}
           >
             See How It Works
-          </Link>
+          </a>
         </div>
 
         <p style={{ margin: 0, fontSize: 13, color: '#4b5563' }}>
@@ -247,11 +254,15 @@ export default function Landing() {
       </section>
 
       {/* How it works */}
-      <section style={{
-        borderTop: '1px solid #1e1e2e',
-        borderBottom: '1px solid #1e1e2e',
-        backgroundColor: '#0d0d12',
-      }}>
+      <section
+        id="how-it-works"
+        style={{
+          borderTop: '1px solid #e2e8f0',
+          borderBottom: '1px solid #e2e8f0',
+          backgroundColor: '#f8fafc',
+          scrollMarginTop: 86,
+        }}
+      >
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px' }}>
           <h2 style={{ textAlign: 'center', margin: '0 0 56px', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 700, letterSpacing: '-0.5px' }}>
             How It Works
@@ -268,15 +279,15 @@ export default function Landing() {
       <section style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px' }}>
         <div style={{
           textAlign: 'center',
-          backgroundColor: '#111118',
-          border: '1px solid #1e1e2e',
+          backgroundColor: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: 24,
           padding: '64px 32px',
         }}>
           <h2 style={{ margin: '0 0 16px', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 700, letterSpacing: '-0.5px' }}>
             Ready to get more interviews?
           </h2>
-          <p style={{ margin: '0 0 32px', fontSize: 16, color: '#9ca3af' }}>
+          <p style={{ margin: '0 0 32px', fontSize: 16, color: '#64748b' }}>
             Join thousands of job seekers who optimized their resumes with ResuMatch.
           </p>
           <Link
@@ -303,7 +314,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid #1e1e2e', padding: '28px 24px' }}>
+      <footer style={{ borderTop: '1px solid rgba(15, 23, 42, 0.08)', padding: '24px 24px' }}>
         <div style={{
           maxWidth: 1100,
           margin: '0 auto',
@@ -326,9 +337,14 @@ export default function Landing() {
               fontSize: 13,
               color: '#fff',
             }}>R</div>
-            <span style={{ fontWeight: 600, fontSize: 15 }}>ResuMatch</span>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 15, color: '#1a1a1a' }}>ResuMatch</div>
+              <div style={{ fontSize: 13, color: '#64748b' }}>AI-powered resume analysis for smarter job applications.</div>
+            </div>
           </div>
-          <span style={{ fontSize: 13, color: '#4b5563' }}>© 2025 ResuMatch. Built for job seekers.</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 13, color: '#4b5563' }}>© {currentYear} ResuMatch</span>
+          </div>
         </div>
       </footer>
     </div>

@@ -51,8 +51,8 @@ function Chip({ label }: { label: string }) {
 function Card({ children }: { children: React.ReactNode }) {
   return (
     <div className="animate-fade-in" style={{
-      backgroundColor: '#111118',
-      border: '1px solid #1e1e2e',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e2e8f0',
       borderRadius: 16,
       padding: '20px 24px',
     }}>
@@ -65,8 +65,8 @@ function SubScoreCard({ label, score }: { label: string; score: number }) {
   const color = scoreColor(score);
   return (
     <div style={{
-      backgroundColor: '#0a0a0f',
-      border: '1px solid #1e1e2e',
+      backgroundColor: '#f0efea',
+      border: '1px solid #e2e8f0',
       borderRadius: 12,
       padding: '16px',
     }}>
@@ -96,7 +96,7 @@ function SuggestionRow({ index, text }: { index: number; text: string }) {
       }}
     >
       <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 600, color: '#6366f1', minWidth: 20 }}>{index}.</span>
-      <span style={{ fontSize: 14, color: '#d1d5db', lineHeight: 1.6 }}>{text}</span>
+      <span style={{ fontSize: 14, color: '#374151', lineHeight: 1.6 }}>{text}</span>
     </div>
   );
 }
@@ -132,7 +132,7 @@ export default function ScoreResultPanel({ result, onReset }: ScoreResultPanelPr
 
       {/* Sub Scores */}
       <Card>
-        <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 600, color: '#fff' }}>Score Breakdown</h3>
+        <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 600, color: '#1a1a1a' }}>Score Breakdown</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
           <SubScoreCard label="📝 Content Quality" score={result.contentScore} />
           <SubScoreCard label="🎯 Impact & Achievements" score={result.impactScore} />
@@ -144,7 +144,7 @@ export default function ScoreResultPanel({ result, onReset }: ScoreResultPanelPr
       {/* ATS Keywords */}
       {result.atsKeywordsFound.length > 0 && (
         <Card>
-          <h3 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 600, color: '#fff' }}>🔍 ATS Keywords Found</h3>
+          <h3 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 600, color: '#1a1a1a' }}>🔍 ATS Keywords Found</h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {result.atsKeywordsFound.map((k) => <Chip key={k} label={k} />)}
           </div>
@@ -154,7 +154,7 @@ export default function ScoreResultPanel({ result, onReset }: ScoreResultPanelPr
       {/* Suggestions */}
       {result.suggestions.length > 0 && (
         <Card>
-          <h3 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 600, color: '#fff' }}>💡 Improvement Tips</h3>
+          <h3 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 600, color: '#1a1a1a' }}>💡 Improvement Tips</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {result.suggestions.map((s, i) => (
               <SuggestionRow key={i} index={i + 1} text={s} />
@@ -177,7 +177,7 @@ export default function ScoreResultPanel({ result, onReset }: ScoreResultPanelPr
             cursor: 'pointer',
             transition: 'all 0.2s ease',
           }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = '#111118'; (e.target as HTMLElement).style.color = '#fff'; }}
+          onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = '#ffffff'; (e.target as HTMLElement).style.color = '#1a1a1a'; }}
           onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = 'transparent'; (e.target as HTMLElement).style.color = '#9ca3af'; }}
         >
           Score Another Resume

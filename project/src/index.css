@@ -14,18 +14,18 @@ html {
 
 body {
   margin: 0;
-  background-color: #0a0a0f;
-  color: #ffffff;
+  background-color: #f0efea;
+  color: #1a1a1a;
 }
 
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0f;
+  background: #f0efea;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e1e2e;
+  background: #e2e8f0;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -76,7 +76,7 @@ body {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #111118 25%, #1a1a24 50%, #111118 75%);
+  background: linear-gradient(90deg, #ffffff 25%, #1a1a24 50%, #ffffff 75%);
   background-size: 400px 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }

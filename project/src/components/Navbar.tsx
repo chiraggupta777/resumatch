@@ -21,9 +21,9 @@ export default function Navbar() {
       position: 'sticky',
       top: 0,
       zIndex: 50,
-      backgroundColor: 'rgba(10,10,15,0.85)',
+      backgroundColor: 'rgba(240,239,234,0.85)',
       backdropFilter: 'blur(12px)',
-      borderBottom: '1px solid #1e1e2e',
+      borderBottom: '1px solid #e2e8f0',
     }}>
       <div style={{
         maxWidth: 1200,
@@ -49,7 +49,7 @@ export default function Navbar() {
             color: '#fff',
             flexShrink: 0,
           }}>R</div>
-          <span style={{ fontWeight: 700, fontSize: 16, color: '#fff', letterSpacing: '-0.3px' }}>ResuMatch</span>
+          <span style={{ fontWeight: 700, fontSize: 16, color: '#1a1a1a', letterSpacing: '-0.3px' }}>ResuMatch</span>
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -132,8 +132,8 @@ function NavLink({ to, active, children }: { to: string; active: boolean; childr
         textDecoration: 'none',
         fontSize: 14,
         fontWeight: 500,
-        color: active ? '#fff' : hover ? '#d1d5db' : '#6b7280',
-        backgroundColor: active ? '#1e1e2e' : hover ? '#111118' : 'transparent',
+        color: active ? '#1a1a1a' : hover ? '#374151' : '#64748b',
+        backgroundColor: active ? '#e2e8f0' : hover ? '#ffffff' : 'transparent',
         transition: 'all 0.2s ease',
       }}
     >

@@ -12,8 +12,8 @@ const STAGES = [
 export default function StreamingPanel({ stage, text }: StreamingPanelProps) {
   return (
     <div style={{
-      backgroundColor: '#111118',
-      border: '1px solid #1e1e2e',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e2e8f0',
       borderRadius: 16,
       padding: '28px 24px',
       display: 'flex',
@@ -32,7 +32,7 @@ export default function StreamingPanel({ stage, text }: StreamingPanelProps) {
       <p style={{
         margin: 0,
         fontSize: 15,
-        color: '#d1d5db',
+        color: '#374151',
         fontWeight: 500,
         textAlign: 'center',
         transition: 'all 0.3s ease',
@@ -47,8 +47,8 @@ export default function StreamingPanel({ stage, text }: StreamingPanelProps) {
           overflowY: 'auto',
           padding: '14px 16px',
           borderRadius: 10,
-          backgroundColor: '#0a0a0f',
-          border: '1px solid #1e1e2e',
+          backgroundColor: '#f0efea',
+          border: '1px solid #e2e8f0',
           fontFamily: 'monospace',
           fontSize: 13,
           lineHeight: 1.7,

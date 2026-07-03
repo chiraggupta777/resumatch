@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import type { MatchResult } from './MatchResultPanel';
 import type { ScoreResult } from './ScoreResultPanel';
 import ScoreBar from './ScoreBar';
@@ -8,6 +8,7 @@ type HistoryItem = MatchResult | ScoreResult;
 
 interface HistoryCardProps {
   item: HistoryItem;
+  onDelete?: (id: string) => void;
 }
 
 function scoreColor(score: number) {
@@ -44,7 +45,7 @@ function formatDate(dateString: string) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export default function HistoryCard({ item }: HistoryCardProps) {
+export default function HistoryCard({ item, onDelete }: HistoryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [hover, setHover] = useState(false);
 
@@ -60,8 +61,8 @@ export default function HistoryCard({ item }: HistoryCardProps) {
   return (
     <div
       style={{
-        backgroundColor: '#111118',
-        border: `1px solid ${hover || expanded ? '#2e2e3e' : '#1e1e2e'}`,
+        backgroundColor: '#ffffff',
+        border: `1px solid ${hover || expanded ? '#2e2e3e' : '#e2e8f0'}`,
         borderRadius: 16,
         overflow: 'hidden',
         transition: 'border-color 0.2s ease',
@@ -86,7 +87,7 @@ export default function HistoryCard({ item }: HistoryCardProps) {
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: '#1a1a1a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {title}
             </span>
             <span style={{
@@ -102,7 +103,7 @@ export default function HistoryCard({ item }: HistoryCardProps) {
               {isMatch ? 'Resume Matcher' : 'Resume Score'}
             </span>
           </div>
-          <span style={{ fontSize: 12, color: '#6b7280' }}>
+          <span style={{ fontSize: 12, color: '#64748b' }}>
             {item.createdAt ? formatDate(item.createdAt) : 'Unknown date'}
           </span>
         </div>
@@ -119,7 +120,29 @@ export default function HistoryCard({ item }: HistoryCardProps) {
           }}>
             {score}{scoreMax ? `/${scoreMax}` : '%'}
           </div>
-          {expanded ? <ChevronUp size={16} color="#6b7280" /> : <ChevronDown size={16} color="#6b7280" />}
+          {item._id && onDelete && (
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(item._id!);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 34,
+                height: 34,
+                borderRadius: 999,
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                cursor: 'pointer',
+              }}
+              title="Delete history entry"
+            >
+              <Trash2 size={16} color="#64748b" />
+            </div>
+          )}
+          {expanded ? <ChevronUp size={16} color="#64748b" /> : <ChevronDown size={16} color="#64748b" />}
         </div>
       </button>
 
@@ -129,7 +152,7 @@ export default function HistoryCard({ item }: HistoryCardProps) {
         overflow: 'hidden',
         transition: 'max-height 0.4s cubic-bezier(0.4,0,0.2,1)',
       }}>
-        <div style={{ padding: '0 20px 20px', borderTop: '1px solid #1e1e2e' }}>
+        <div style={{ padding: '0 20px 20px', borderTop: '1px solid #e2e8f0' }}>
           {isMatch ? (
             <MatchBody item={item as MatchResult} />
           ) : (
@@ -149,13 +172,13 @@ function MatchBody({ item }: { item: MatchResult }) {
         <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#9ca3af' }}>ATS Keywords</p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div>
-            <p style={{ margin: '0 0 6px', fontSize: 11, color: '#6b7280' }}>Found</p>
+            <p style={{ margin: '0 0 6px', fontSize: 11, color: '#64748b' }}>Found</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
               {item.atsKeywordsFound.map((k) => <Chip key={k} label={k} variant="green" />)}
             </div>
           </div>
           <div>
-            <p style={{ margin: '0 0 6px', fontSize: 11, color: '#6b7280' }}>Missing</p>
+            <p style={{ margin: '0 0 6px', fontSize: 11, color: '#64748b' }}>Missing</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
               {item.atsKeywordsMissing.map((k) => <Chip key={k} label={k} variant="red" />)}
             </div>
@@ -204,7 +227,7 @@ function ScoreBody({ item }: { item: ScoreResult }) {
         ].map(({ label, score }) => (
           <div key={label}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-              <span style={{ fontSize: 12, color: '#6b7280' }}>{label}</span>
+              <span style={{ fontSize: 12, color: '#64748b' }}>{label}</span>
               <span style={{ fontSize: 12, fontWeight: 600, color: scoreColor(score) }}>{score}</span>
             </div>
             <ScoreBar value={score} color={scoreColor(score)} height={4} />

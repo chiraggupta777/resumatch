@@ -13,9 +13,9 @@ function inputStyle(focused: boolean, error: boolean): React.CSSProperties {
     width: '100%',
     padding: '11px 14px',
     borderRadius: 10,
-    border: `1px solid ${error ? '#ef4444' : focused ? '#6366f1' : '#1e1e2e'}`,
-    backgroundColor: '#0a0a0f',
-    color: '#fff',
+    border: `1px solid ${error ? '#ef4444' : focused ? '#6366f1' : '#e2e8f0'}`,
+    backgroundColor: '#f0efea',
+    color: '#1a1a1a',
     fontSize: 14,
     outline: 'none',
     transition: 'border-color 0.2s ease',
@@ -107,7 +107,7 @@ export default function AuthPage({ mode }: Props) {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#0a0a0f',
+      backgroundColor: '#f0efea',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -116,11 +116,11 @@ export default function AuthPage({ mode }: Props) {
       <div style={{
         width: '100%',
         maxWidth: 420,
-        backgroundColor: '#111118',
-        border: '1px solid #1e1e2e',
+        backgroundColor: '#ffffff',
+        border: '1px solid #e2e8f0',
         borderRadius: 20,
         padding: '36px 32px',
-        boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
@@ -137,10 +137,10 @@ export default function AuthPage({ mode }: Props) {
             color: '#fff',
             marginBottom: 16,
           }}>R</div>
-          <h1 style={{ margin: '0 0 6px', fontSize: 22, fontWeight: 700, color: '#fff' }}>
+          <h1 style={{ margin: '0 0 6px', fontSize: 22, fontWeight: 700, color: '#1a1a1a' }}>
             {mode === 'login' ? 'Welcome back' : 'Create your account'}
           </h1>
-          <p style={{ margin: 0, fontSize: 14, color: '#6b7280' }}>
+          <p style={{ margin: 0, fontSize: 14, color: '#64748b' }}>
             {mode === 'login' ? 'Sign in to your account' : 'Start matching resumes for free'}
           </p>
         </div>
@@ -180,7 +180,7 @@ export default function AuthPage({ mode }: Props) {
         </form>
 
         {/* Bottom link */}
-        <p style={{ textAlign: 'center', marginTop: 20, marginBottom: 0, fontSize: 14, color: '#6b7280' }}>
+        <p style={{ textAlign: 'center', marginTop: 20, marginBottom: 0, fontSize: 14, color: '#64748b' }}>
           {mode === 'login' ? (
             <>Don't have an account?{' '}
               <Link to="/signup" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 500 }}>Sign up</Link>

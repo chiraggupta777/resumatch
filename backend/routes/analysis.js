@@ -326,4 +326,27 @@ router.get('/history', authMiddleware, async (req, res) => {
   }
 });
 
+// DELETE /api/analysis/history/:id
+router.delete('/history/:id', authMiddleware, async (req, res) => {
+  try {
+    const deleted = await Analysis.findOneAndDelete({ _id: req.params.id, user: req.userId });
+    if (!deleted) {
+      return res.status(404).json({ message: 'History item not found' });
+    }
+    res.json({ message: 'History item deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// DELETE /api/analysis/history
+router.delete('/history', authMiddleware, async (req, res) => {
+  try {
+    await Analysis.deleteMany({ user: req.userId });
+    res.json({ message: 'History cleared' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
 module.exports = router;

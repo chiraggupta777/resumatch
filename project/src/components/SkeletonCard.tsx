@@ -1,8 +1,8 @@
 export default function SkeletonCard() {
   return (
     <div style={{
-      backgroundColor: '#111118',
-      border: '1px solid #1e1e2e',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e2e8f0',
       borderRadius: 16,
       padding: '20px 24px',
     }}>

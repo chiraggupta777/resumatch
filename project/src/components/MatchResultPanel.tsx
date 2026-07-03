@@ -58,8 +58,8 @@ function Chip({ label, variant }: { label: string; variant: 'green' | 'red' | 'a
 function Card({ children }: { children: React.ReactNode }) {
   return (
     <div className="animate-fade-in" style={{
-      backgroundColor: '#111118',
-      border: '1px solid #1e1e2e',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e2e8f0',
       borderRadius: 16,
       padding: '20px 24px',
     }}>
@@ -70,7 +70,7 @@ function Card({ children }: { children: React.ReactNode }) {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 600, color: '#fff' }}>{children}</h3>
+    <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 600, color: '#1a1a1a' }}>{children}</h3>
   );
 }
 
@@ -110,7 +110,7 @@ export default function MatchResultPanel({ result, onReset }: MatchResultPanelPr
         <SectionHeading>🔍 ATS Keywords</SectionHeading>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div>
-            <p style={{ margin: '0 0 8px', fontSize: 12, color: '#6b7280', fontWeight: 500 }}>Found in your resume</p>
+            <p style={{ margin: '0 0 8px', fontSize: 12, color: '#64748b', fontWeight: 500 }}>Found in your resume</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {result.atsKeywordsFound.length > 0
                 ? result.atsKeywordsFound.map((k) => <Chip key={k} label={k} variant="green" />)
@@ -118,7 +118,7 @@ export default function MatchResultPanel({ result, onReset }: MatchResultPanelPr
             </div>
           </div>
           <div>
-            <p style={{ margin: '0 0 8px', fontSize: 12, color: '#6b7280', fontWeight: 500 }}>Missing from your resume</p>
+            <p style={{ margin: '0 0 8px', fontSize: 12, color: '#64748b', fontWeight: 500 }}>Missing from your resume</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {result.atsKeywordsMissing.length > 0
                 ? result.atsKeywordsMissing.map((k) => <Chip key={k} label={k} variant="red" />)
@@ -174,7 +174,7 @@ export default function MatchResultPanel({ result, onReset }: MatchResultPanelPr
             cursor: 'pointer',
             transition: 'all 0.2s ease',
           }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = '#111118'; (e.target as HTMLElement).style.color = '#fff'; }}
+          onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = '#ffffff'; (e.target as HTMLElement).style.color = '#1a1a1a'; }}
           onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = 'transparent'; (e.target as HTMLElement).style.color = '#9ca3af'; }}
         >
           Analyze Another Resume
@@ -201,7 +201,7 @@ function SuggestionRow({ index, text }: { index: number; text: string }) {
       }}
     >
       <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 600, color: '#6366f1', minWidth: 20 }}>{index}.</span>
-      <span style={{ fontSize: 14, color: '#d1d5db', lineHeight: 1.6 }}>{text}</span>
+      <span style={{ fontSize: 14, color: '#374151', lineHeight: 1.6 }}>{text}</span>
     </div>
   );
 }
