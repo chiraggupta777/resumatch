@@ -93,6 +93,8 @@ export default function AuthPage({ mode }: Props) {
 
   const handleGoogle = async () => {
     setGoogleLoading(true);
+    let timeoutId: number | null = null;
+    let promptHandled = false;
     try {
       const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
       if (!clientId) {
@@ -114,32 +116,95 @@ export default function AuthPage({ mode }: Props) {
         });
       }
 
-      // Initialize handler and prompt; callback receives the ID token in `credential`
-      (window as any).google.accounts.id.initialize({
-        client_id: clientId,
-        callback: async (response: any) => {
-          const idToken = response?.credential;
-          if (!idToken) {
-            setServerError('Google sign-in failed: no credential returned');
-            setGoogleLoading(false);
-            return;
-          }
-          try {
-            const res = await api.post('/api/auth/google', { googleToken: idToken });
-            login(res.data.token, res.data.user);
-            navigate('/dashboard');
-          } catch (err: any) {
-            setServerError(err.response?.data?.error || err.response?.data?.message || 'Google sign-in failed. Please try again.');
-          } finally {
-            setGoogleLoading(false);
-          }
+      // Ensure we don't reinitialize repeatedly in the same session
+      if (!(window as any)._gsiInitialized) {
+        try {
+          (window as any).google.accounts.id.initialize({
+            client_id: clientId,
+            callback: async (response: any) => {
+              // Called when a credential is returned
+              promptHandled = true;
+              if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+              const idToken = response?.credential;
+              if (!idToken) {
+                setServerError('Google sign-in failed: no credential returned');
+                setGoogleLoading(false);
+                return;
+              }
+              try {
+                const res = await api.post('/api/auth/google', { googleToken: idToken });
+                login(res.data.token, res.data.user);
+                navigate('/dashboard');
+              } catch (err: any) {
+                setServerError(err.response?.data?.error || err.response?.data?.message || 'Google sign-in failed. Please try again.');
+              } finally {
+                setGoogleLoading(false);
+              }
+            }
+          });
+          (window as any)._gsiInitialized = true;
+        } catch (initErr: any) {
+          setServerError('Google initialization failed');
+          setGoogleLoading(false);
+          return;
         }
-      });
+      }
 
-      // Show the one-tap / credential prompt. The callback above will handle the result.
-      (window as any).google.accounts.id.prompt();
+      // Set a timeout to avoid leaving the UI stuck forever
+      timeoutId = window.setTimeout(() => {
+        if (!promptHandled) {
+          setServerError('Google sign-in timed out. Please try again.');
+          setGoogleLoading(false);
+          promptHandled = true;
+        }
+      }, 12000);
+
+      // Prompt supports a notification callback to indicate why prompt did not display
+      try {
+        (window as any).google.accounts.id.prompt((notif: any) => {
+          if (promptHandled) return;
+          // notif provides helper methods; handle common non-display cases
+          try {
+            if (notif && notif.isNotDisplayed && notif.isNotDisplayed()) {
+              const reason = (notif.getNotDisplayedReason && notif.getNotDisplayedReason()) || 'not_displayed';
+              setServerError('Google prompt not displayed: ' + reason);
+              promptHandled = true;
+              if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+              setGoogleLoading(false);
+              return;
+            }
+            if (notif && notif.isSkippedMoment && notif.isSkippedMoment()) {
+              setServerError('Google sign-in skipped');
+              promptHandled = true;
+              if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+              setGoogleLoading(false);
+              return;
+            }
+            if (notif && notif.isDismissedMoment && notif.isDismissedMoment()) {
+              const reason = (notif.getDismissedReason && notif.getDismissedReason()) || 'dismissed';
+              setServerError('Google sign-in dismissed: ' + reason);
+              promptHandled = true;
+              if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+              setGoogleLoading(false);
+              return;
+            }
+          } catch (e) {
+            // ignore notification parsing errors
+          }
+          // If notif doesn't indicate a problem, do nothing and wait for the initialize callback
+        });
+      } catch (promptErr: any) {
+        // If prompt() throws, surface an error
+        if (!promptHandled) {
+          if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+          setServerError('Google prompt failed to display');
+          setGoogleLoading(false);
+          promptHandled = true;
+        }
+      }
     } catch (err: any) {
-      setServerError(err.message || 'Google sign-in failed. Please try again.');
+      if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+      setServerError(err?.message || 'Google sign-in failed. Please try again.');
       setGoogleLoading(false);
     }
   };
