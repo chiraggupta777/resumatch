@@ -8,7 +8,14 @@ const analysisRoutes = require('./routes/analysis');
 
 const app = express();
 app.use(cors({
-  origin: 'https://resumatch-lime.vercel.app',
+  origin: function (origin, callback) {
+    const allowedOrigins = ['https://resumatch-lime.vercel.app', 'http://localhost:5173'];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());

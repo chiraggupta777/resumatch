@@ -17,6 +17,7 @@ export interface MatchResult {
 interface MatchResultPanelProps {
   result: MatchResult;
   onReset?: () => void;
+  displayJobTitle?: string;
 }
 
 function scoreColor(score: number) {
@@ -74,9 +75,10 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function MatchResultPanel({ result, onReset }: MatchResultPanelProps) {
+export default function MatchResultPanel({ result, onReset, displayJobTitle }: MatchResultPanelProps) {
   const color = scoreColor(result.matchScore);
   const label = scoreLabel(result.matchScore);
+  const headingTitle = displayJobTitle?.trim() || result.jobTitle || 'this role';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -86,8 +88,8 @@ export default function MatchResultPanel({ result, onReset }: MatchResultPanelPr
           <div style={{ fontSize: 72, fontWeight: 800, color, lineHeight: 1, letterSpacing: '-2px' }}>
             {result.matchScore}%
           </div>
-          <p style={{ margin: 0, fontSize: 14, color: '#9ca3af' }}>
-            Match Score for {result.jobTitle}
+          <p style={{ margin: 0, fontSize: 14, color: '#9ca3af', textAlign: 'center', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+            Match Score for {headingTitle}
           </p>
           <div style={{
             display: 'inline-flex',

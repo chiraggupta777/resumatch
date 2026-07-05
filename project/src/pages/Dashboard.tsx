@@ -185,9 +185,6 @@ export default function Dashboard() {
         }
       }
 
-      console.log('FULL TEXT FROM STREAM:', fullText);
-      console.log('FULL TEXT LENGTH:', fullText.length);
-
       stopStageTimer();
 
       // Robust JSON extraction - find first { and last }
@@ -401,7 +398,7 @@ function MatchMode(props: MatchModeProps) {
           {props.streaming ? (
             <StreamingPanel stage={props.streamStage} text="" />
           ) : props.matchResult ? (
-            <MatchResultPanel result={props.matchResult} onReset={props.onReset} />
+            <MatchResultPanel result={props.matchResult} onReset={props.onReset} displayJobTitle={props.jobTitle} />
           ) : null}
         </div>
       )}
