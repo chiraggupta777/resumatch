@@ -159,48 +159,50 @@ export default function AuthPage({ mode }: Props) {
         }
       }, 12000);
 
-      // Prompt supports a notification callback to indicate why prompt did not display
+      // Render a one-time Google rendered button and programmatically click it
+      // to open the account chooser in response to the user's click.
       try {
-        (window as any).google.accounts.id.prompt((notif: any) => {
-          if (promptHandled) return;
-          // notif provides helper methods; handle common non-display cases
-          try {
-            if (notif && notif.isNotDisplayed && notif.isNotDisplayed()) {
-              const reason = (notif.getNotDisplayedReason && notif.getNotDisplayedReason()) || 'not_displayed';
-              setServerError('Google prompt not displayed: ' + reason);
-              promptHandled = true;
-              if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
-              setGoogleLoading(false);
-              return;
-            }
-            if (notif && notif.isSkippedMoment && notif.isSkippedMoment()) {
-              setServerError('Google sign-in skipped');
-              promptHandled = true;
-              if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
-              setGoogleLoading(false);
-              return;
-            }
-            if (notif && notif.isDismissedMoment && notif.isDismissedMoment()) {
-              const reason = (notif.getDismissedReason && notif.getDismissedReason()) || 'dismissed';
-              setServerError('Google sign-in dismissed: ' + reason);
-              promptHandled = true;
-              if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
-              setGoogleLoading(false);
-              return;
-            }
-          } catch (e) {
-            // ignore notification parsing errors
-          }
-          // If notif doesn't indicate a problem, do nothing and wait for the initialize callback
+        // remove any existing temporary container
+        const existing = document.getElementById('_gsi_render_container');
+        if (existing) existing.remove();
+
+        const container = document.createElement('div');
+        container.id = '_gsi_render_container';
+        // keep it offscreen so layout stays unchanged
+        container.style.position = 'absolute';
+        container.style.left = '-9999px';
+        container.style.top = '-9999px';
+        document.body.appendChild(container);
+
+        // Render the Google button into the offscreen container
+        (window as any).google.accounts.id.renderButton(container, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
         });
-      } catch (promptErr: any) {
-        // If prompt() throws, surface an error
-        if (!promptHandled) {
+
+        // Find the rendered button and click it immediately (counts as user gesture)
+        const btn = container.querySelector('button');
+        if (!btn) {
           if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
-          setServerError('Google prompt failed to display');
+          setServerError('Failed to render Google sign-in button');
           setGoogleLoading(false);
           promptHandled = true;
+          container.remove();
+          return;
         }
+
+        // Listen for possible popup/credential failures via callback already set in initialize
+        // Programmatic click should be allowed because this runs inside the user's click handler.
+        (btn as HTMLButtonElement).click();
+
+        // Cleanup: remove the container after a short delay (allow callback to run)
+        window.setTimeout(() => { try { container.remove(); } catch (e) {} }, 30000);
+      } catch (renderErr: any) {
+        if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+        setServerError('Google button failed to render');
+        setGoogleLoading(false);
+        promptHandled = true;
       }
     } catch (err: any) {
       if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
