@@ -8,10 +8,7 @@ const analysisRoutes = require('./routes/analysis');
 
 const app = express();
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://resumatch-1-g97p.onrender.com'
-  ],
+  origin: 'https://resumatch-lime.vercel.app',
   credentials: true
 }));
 app.use(express.json());
