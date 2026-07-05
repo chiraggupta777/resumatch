@@ -10,7 +10,7 @@ import { Loader2 } from 'lucide-react';
 
 type Mode = 'match' | 'score';
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   const [hover, setHover] = useState(false);
