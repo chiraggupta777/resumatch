@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Link } from '../router';
 import { ArrowRight, Target, Search, Lightbulb } from 'lucide-react';
 
-function NavButton({ children, filled, to }: { children: React.ReactNode; filled?: boolean; to: string }) {
+function NavButton({ children, filled, to, className }: { children: React.ReactNode; filled?: boolean; to: string; className?: string }) {
   const [hover, setHover] = useState(false);
   return (
     <Link
       to={to}
+      className={className}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -19,6 +20,7 @@ function NavButton({ children, filled, to }: { children: React.ReactNode; filled
         backgroundColor: filled ? (hover ? '#4f46e5' : '#6366f1') : (hover ? '#ffffff' : 'transparent'),
         color: filled ? '#fff' : '#1a1a1a',
         transition: 'all 0.2s ease',
+        whiteSpace: 'nowrap',
       }}
     >
       {children}
@@ -99,7 +101,35 @@ export default function Landing() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div style={{ backgroundColor: '#f0efea', minHeight: '100vh', color: '#1a1a1a' }}>
+    <div className="landing-shell" style={{ backgroundColor: '#f0efea', minHeight: '100vh', color: '#1a1a1a', overflowX: 'hidden' }}>
+      <style>{`
+        .landing-nav-inner { box-sizing: border-box; }
+        .landing-nav-actions { gap: 10px; flex-shrink: 0; }
+        .landing-nav-btn--mobile { display: none; }
+        .landing-brand-text { font-weight: 700; font-size: 17px; letter-spacing: -0.3px; color: #1a1a1a; }
+        .landing-hero { box-sizing: border-box; }
+        .landing-hero h1 { font-size: clamp(36px, 10vw, 64px); line-height: 1.05; }
+        @media (max-width: 767px) {
+          .landing-nav-inner { padding: 0 16px !important; height: 58px !important; }
+          .landing-nav-actions { gap: 8px; }
+          .landing-nav-btn { padding: 7px 10px !important; font-size: 12px !important; }
+          .landing-nav-btn--desktop { display: none; }
+          .landing-nav-btn--mobile { display: inline; }
+          .landing-brand-text { font-size: 15px; }
+          .landing-hero { padding: 48px 16px 56px !important; }
+          .landing-hero h1 { font-size: clamp(36px, 9.5vw, 46px) !important; line-height: 1.05 !important; letter-spacing: -1px !important; }
+          .landing-hero p { font-size: 16px !important; line-height: 1.6 !important; }
+          .landing-content-section { padding-left: 16px !important; padding-right: 16px !important; }
+          .landing-footer { padding-left: 16px !important; padding-right: 16px !important; }
+          .landing-cta-row { gap: 10px; }
+        }
+        @media (max-width: 374px) {
+          .landing-nav-inner { padding: 0 12px !important; }
+          .landing-brand-text { font-size: 14px; }
+          .landing-hero { padding: 44px 12px 48px !important; }
+          .landing-hero h1 { font-size: 36px !important; }
+        }
+      `}</style>
       {/* Navbar */}
       <nav style={{
         position: 'sticky',
@@ -111,16 +141,17 @@ export default function Landing() {
         borderBottom: '1px solid rgba(15, 23, 42, 0.08)',
         boxShadow: '0 1px 20px rgba(15, 23, 42, 0.04)',
       }}>
-        <div style={{
+        <div className="landing-nav-inner" style={{
           maxWidth: 1100,
           margin: '0 auto',
-          padding: '0 24px',
+          padding: '0 20px',
           height: 62,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          gap: 12,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flexShrink: 1 }}>
             <div style={{
               width: 32,
               height: 32,
@@ -132,18 +163,22 @@ export default function Landing() {
               fontWeight: 700,
               fontSize: 16,
               color: '#fff',
+              flexShrink: 0,
             }}>R</div>
-            <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: '-0.3px', color: '#1a1a1a' }}>ResuMatch</span>
+            <span className="landing-brand-text">ResuMatch</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <NavButton to="/login">Sign In</NavButton>
-            <NavButton to="/signup" filled>Get Started Free</NavButton>
+          <div className="landing-nav-actions" style={{ display: 'flex', alignItems: 'center' }}>
+            <NavButton className="landing-nav-btn" to="/login">Sign In</NavButton>
+            <NavButton className="landing-nav-btn" to="/signup" filled>
+              <span className="landing-nav-btn--desktop">Get Started Free</span>
+              <span className="landing-nav-btn--mobile">Get Started</span>
+            </NavButton>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '96px 24px 80px', textAlign: 'center' }}>
+      <section className="landing-hero" style={{ maxWidth: 1100, margin: '0 auto', padding: '96px 24px 80px', textAlign: 'center' }}>
         <div style={{
           display: 'inline-block',
           padding: '5px 14px',
@@ -160,9 +195,9 @@ export default function Landing() {
 
         <h1 style={{
           margin: '0 0 20px',
-          fontSize: 'clamp(36px, 6vw, 64px)',
+          fontSize: 'clamp(36px, 10vw, 64px)',
           fontWeight: 800,
-          lineHeight: 1.1,
+          lineHeight: 1.05,
           letterSpacing: '-1.5px',
           color: '#1a1a1a',
         }}>
@@ -182,7 +217,7 @@ export default function Landing() {
           and exactly what to fix — in real time.
         </p>
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
+        <div className="landing-cta-row" style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
           <Link
             to="/signup"
             onMouseEnter={() => setCtaHover(true)}
@@ -233,7 +268,7 @@ export default function Landing() {
       </section>
 
       {/* Feature cards */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 96px' }}>
+      <section className="landing-content-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 96px', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
           <FeatureCard
             icon={Target}
@@ -263,7 +298,7 @@ export default function Landing() {
           scrollMarginTop: 86,
         }}
       >
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px' }}>
+        <div className="landing-content-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px', boxSizing: 'border-box' }}>
           <h2 style={{ textAlign: 'center', margin: '0 0 56px', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 700, letterSpacing: '-0.5px' }}>
             How It Works
           </h2>
@@ -276,7 +311,7 @@ export default function Landing() {
       </section>
 
       {/* CTA Banner */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px' }}>
+      <section className="landing-content-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px', boxSizing: 'border-box' }}>
         <div style={{
           textAlign: 'center',
           backgroundColor: '#ffffff',
@@ -314,7 +349,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid rgba(15, 23, 42, 0.08)', padding: '24px 24px' }}>
+      <footer className="landing-footer" style={{ borderTop: '1px solid rgba(15, 23, 42, 0.08)', padding: '24px 24px', boxSizing: 'border-box' }}>
         <div style={{
           maxWidth: 1100,
           margin: '0 auto',
