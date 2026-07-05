@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from '../router';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -59,6 +59,97 @@ export default function AuthPage({ mode }: Props) {
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const googleBtnRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let clickTimeout: number | null = null;
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+    if (!clientId) {
+      // Do not initialize if client id missing; UI will show error on click
+      return;
+    }
+
+    const loadScript = async () => {
+      if ((window as any).google && (window as any)._gsiInitialized) return;
+      if (!(window as any).google) {
+        await new Promise<void>((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://accounts.google.com/gsi/client';
+          s.async = true;
+          s.defer = true;
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error('Failed to load Google SDK'));
+          document.head.appendChild(s);
+        }).catch(() => {
+          setServerError('Failed to load Google SDK');
+        });
+      }
+
+      if (!(window as any)._gsiInitialized) {
+        try {
+          (window as any).google.accounts.id.initialize({
+            client_id: clientId,
+            callback: async (response: any) => {
+              if (clickTimeout) { clearTimeout(clickTimeout); clickTimeout = null; }
+              setGoogleLoading(false);
+              const idToken = response?.credential;
+              if (!idToken) {
+                setServerError('Google sign-in failed: no credential returned');
+                return;
+              }
+              try {
+                const res = await api.post('/api/auth/google', { googleToken: idToken });
+                login(res.data.token, res.data.user);
+                navigate('/dashboard');
+              } catch (err: any) {
+                setServerError(err.response?.data?.error || err.response?.data?.message || 'Google sign-in failed. Please try again.');
+              }
+            }
+          });
+          (window as any)._gsiInitialized = true;
+        } catch (initErr: any) {
+          setServerError('Google initialization failed');
+        }
+      }
+
+      // Render the button into the ref if present
+      try {
+        const container = googleBtnRef.current;
+        if (container && (window as any).google) {
+          // Clear any previous content
+          container.innerHTML = '';
+          (window as any).google.accounts.id.renderButton(container, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+          });
+
+          // Attach click listener to set loading state and timeout
+          const btn = container.querySelector('button');
+          if (btn) {
+            const onClick = () => {
+              setServerError('');
+              setGoogleLoading(true);
+              if (clickTimeout) { clearTimeout(clickTimeout); }
+              clickTimeout = window.setTimeout(() => {
+                setServerError('Google sign-in timed out. Please try again.');
+                setGoogleLoading(false);
+                clickTimeout = null;
+              }, 12000);
+            };
+            btn.addEventListener('click', onClick);
+            // cleanup listener on effect cleanup
+            return () => { try { btn.removeEventListener('click', onClick); } catch (e) {} };
+          }
+        }
+      } catch (renderErr: any) {
+        setServerError('Google button failed to render');
+      }
+    };
+
+    loadScript();
+    // no cleanup for script; button listeners cleaned above when possible
+  }, [googleBtnRef]);
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -91,125 +182,7 @@ export default function AuthPage({ mode }: Props) {
     }
   };
 
-  const handleGoogle = async () => {
-    setGoogleLoading(true);
-    let timeoutId: number | null = null;
-    let promptHandled = false;
-    try {
-      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
-      if (!clientId) {
-        setServerError('Missing VITE_GOOGLE_CLIENT_ID in frontend environment');
-        setGoogleLoading(false);
-        return;
-      }
-
-      // Load Google Identity Services script if needed
-      if (!(window as any).google) {
-        await new Promise<void>((resolve, reject) => {
-          const s = document.createElement('script');
-          s.src = 'https://accounts.google.com/gsi/client';
-          s.async = true;
-          s.defer = true;
-          s.onload = () => resolve();
-          s.onerror = () => reject(new Error('Failed to load Google SDK'));
-          document.head.appendChild(s);
-        });
-      }
-
-      // Ensure we don't reinitialize repeatedly in the same session
-      if (!(window as any)._gsiInitialized) {
-        try {
-          (window as any).google.accounts.id.initialize({
-            client_id: clientId,
-            callback: async (response: any) => {
-              // Called when a credential is returned
-              promptHandled = true;
-              if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
-              const idToken = response?.credential;
-              if (!idToken) {
-                setServerError('Google sign-in failed: no credential returned');
-                setGoogleLoading(false);
-                return;
-              }
-              try {
-                const res = await api.post('/api/auth/google', { googleToken: idToken });
-                login(res.data.token, res.data.user);
-                navigate('/dashboard');
-              } catch (err: any) {
-                setServerError(err.response?.data?.error || err.response?.data?.message || 'Google sign-in failed. Please try again.');
-              } finally {
-                setGoogleLoading(false);
-              }
-            }
-          });
-          (window as any)._gsiInitialized = true;
-        } catch (initErr: any) {
-          setServerError('Google initialization failed');
-          setGoogleLoading(false);
-          return;
-        }
-      }
-
-      // Set a timeout to avoid leaving the UI stuck forever
-      timeoutId = window.setTimeout(() => {
-        if (!promptHandled) {
-          setServerError('Google sign-in timed out. Please try again.');
-          setGoogleLoading(false);
-          promptHandled = true;
-        }
-      }, 12000);
-
-      // Render a one-time Google rendered button and programmatically click it
-      // to open the account chooser in response to the user's click.
-      try {
-        // remove any existing temporary container
-        const existing = document.getElementById('_gsi_render_container');
-        if (existing) existing.remove();
-
-        const container = document.createElement('div');
-        container.id = '_gsi_render_container';
-        // keep it offscreen so layout stays unchanged
-        container.style.position = 'absolute';
-        container.style.left = '-9999px';
-        container.style.top = '-9999px';
-        document.body.appendChild(container);
-
-        // Render the Google button into the offscreen container
-        (window as any).google.accounts.id.renderButton(container, {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-        });
-
-        // Find the rendered button and click it immediately (counts as user gesture)
-        const btn = container.querySelector('button');
-        if (!btn) {
-          if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
-          setServerError('Failed to render Google sign-in button');
-          setGoogleLoading(false);
-          promptHandled = true;
-          container.remove();
-          return;
-        }
-
-        // Listen for possible popup/credential failures via callback already set in initialize
-        // Programmatic click should be allowed because this runs inside the user's click handler.
-        (btn as HTMLButtonElement).click();
-
-        // Cleanup: remove the container after a short delay (allow callback to run)
-        window.setTimeout(() => { try { container.remove(); } catch (e) {} }, 30000);
-      } catch (renderErr: any) {
-        if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
-        setServerError('Google button failed to render');
-        setGoogleLoading(false);
-        promptHandled = true;
-      }
-    } catch (err: any) {
-      if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
-      setServerError(err?.message || 'Google sign-in failed. Please try again.');
-      setGoogleLoading(false);
-    }
-  };
+  
 
   return (
     <div style={{
@@ -252,8 +225,16 @@ export default function AuthPage({ mode }: Props) {
           </p>
         </div>
 
-        {/* Google Button */}
-        <GoogleButton loading={googleLoading} onClick={handleGoogle} mode={mode} />
+        {/* Google Button (official rendered button) */}
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+          <div ref={googleBtnRef} id="google-button-container" />
+        </div>
+        {googleLoading && (
+          <div style={{ textAlign: 'center', marginBottom: 12, color: '#64748b', display: 'flex', justifyContent: 'center', gap: 8 }}>
+            <Loader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />
+            <span>Connecting...</span>
+          </div>
+        )}
 
         {/* Divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
@@ -303,48 +284,7 @@ export default function AuthPage({ mode }: Props) {
   );
 }
 
-function GoogleButton({ loading, onClick }: { loading: boolean; onClick: () => void; mode: 'login' | 'signup' }) {
-  const [hover, setHover] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={loading}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        width: '100%',
-        padding: '11px 16px',
-        borderRadius: 10,
-        border: '1px solid #e5e7eb',
-        backgroundColor: hover ? '#f9fafb' : '#ffffff',
-        color: '#111827',
-        fontSize: 14,
-        fontWeight: 500,
-        cursor: loading ? 'not-allowed' : 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 8,
-        transition: 'all 0.2s ease',
-        boxShadow: hover ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
-        opacity: loading ? 0.7 : 1,
-      }}
-    >
-      {loading ? (
-        <Loader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />
-      ) : (
-        <svg width="18" height="18" viewBox="0 0 18 18">
-          <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/>
-          <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/>
-          <path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/>
-          <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.31z"/>
-        </svg>
-      )}
-      {loading ? 'Connecting...' : `Continue with Google`}
-    </button>
-  );
-}
+// Official Google button is rendered into the `googleBtnRef` container via useEffect above.
 
 function SubmitButton({ loading, mode }: { loading: boolean; mode: 'login' | 'signup' }) {
   const [hover, setHover] = useState(false);
