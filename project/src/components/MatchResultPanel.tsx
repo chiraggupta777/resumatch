@@ -81,7 +81,7 @@ export default function MatchResultPanel({ result, onReset, displayJobTitle }: M
   const headingTitle = displayJobTitle?.trim() || result.jobTitle || 'this role';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', minWidth: 0 }}>
       {/* Match Score */}
       <Card>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, marginBottom: 16 }}>
@@ -110,7 +110,7 @@ export default function MatchResultPanel({ result, onReset, displayJobTitle }: M
       {/* ATS Keywords */}
       <Card>
         <SectionHeading>🔍 ATS Keywords</SectionHeading>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div className="result-grid-two">
           <div>
             <p style={{ margin: '0 0 8px', fontSize: 12, color: '#64748b', fontWeight: 500 }}>Found in your resume</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -154,7 +154,7 @@ export default function MatchResultPanel({ result, onReset, displayJobTitle }: M
       {result.suggestions.length > 0 && (
         <Card>
           <SectionHeading>💡 How to Improve</SectionHeading>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
             {result.suggestions.map((s, i) => (
               <SuggestionRow key={i} index={i + 1} text={s} />
             ))}

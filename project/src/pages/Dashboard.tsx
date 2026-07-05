@@ -247,9 +247,9 @@ export default function Dashboard() {
   return (
     <div style={{ backgroundColor: '#f0efea', minHeight: '100vh' }}>
       <Navbar />
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
+      <div className="page-shell">
         {/* Mode tabs */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 36 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 36, width: '100%' }}>
           <div style={{
             display: 'inline-flex',
             gap: 4,
@@ -257,6 +257,8 @@ export default function Dashboard() {
             borderRadius: 999,
             backgroundColor: '#f0efea',
             border: '1px solid #e2e8f0',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
           }}>
             <TabButton active={mode === 'match'} onClick={() => { setMode('match'); resetAll(); }}>
               🎯 Resume Matcher
@@ -324,20 +326,14 @@ function MatchMode(props: MatchModeProps) {
   const showResults = props.streaming || props.matchResult;
 
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: showResults ? '1fr 1fr' : '1fr',
-      gap: 24,
-      alignItems: 'start',
-    }}
-    className="match-grid">
+    <div
+      className="match-grid"
+      style={{
+        gridTemplateColumns: showResults ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      }}
+    >
       {/* Left panel */}
-      <div style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid #e2e8f0',
-        borderRadius: 20,
-        padding: '28px 24px',
-      }}>
+      <div className="dashboard-panel">
         <h2 style={{ margin: '0 0 6px', fontSize: 20, fontWeight: 700, color: '#1a1a1a' }}>Analyze Your Resume</h2>
         <p style={{ margin: '0 0 24px', fontSize: 14, color: '#64748b', lineHeight: 1.6 }}>
           Upload your PDF and paste the job description to get your AI match report.
@@ -394,7 +390,7 @@ function MatchMode(props: MatchModeProps) {
 
       {/* Right panel */}
       {showResults && (
-        <div>
+        <div style={{ width: '100%', minWidth: 0 }}>
           {props.streaming ? (
             <StreamingPanel stage={props.streamStage} text="" />
           ) : props.matchResult ? (
@@ -414,18 +410,13 @@ interface ScoreModeProps {
 
 function ScoreMode(props: ScoreModeProps) {
   return (
-    <div style={{ maxWidth: 560, margin: '0 auto' }}>
+    <div style={{ maxWidth: 560, margin: '0 auto', width: '100%' }}>
       {props.streaming ? (
         <StreamingPanel stage={props.streamStage} text="" />
       ) : props.scoreResult ? (
         <ScoreResultPanel result={props.scoreResult} onReset={props.onReset} />
       ) : (
-        <div style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: 20,
-          padding: '32px 28px',
-        }}>
+        <div className="dashboard-panel" style={{ maxWidth: 560, margin: '0 auto' }}>
           <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#1a1a1a', textAlign: 'center' }}>
             Get Your Resume Score
           </h2>

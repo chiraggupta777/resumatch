@@ -105,7 +105,7 @@ export default function ScoreResultPanel({ result, onReset }: ScoreResultPanelPr
   const color = scoreColor(result.overallScore);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 600, margin: '0 auto', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 600, margin: '0 auto', width: '100%', minWidth: 0 }}>
       {/* Overall Score */}
       <Card>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, marginBottom: 16 }}>
@@ -133,7 +133,7 @@ export default function ScoreResultPanel({ result, onReset }: ScoreResultPanelPr
       {/* Sub Scores */}
       <Card>
         <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 600, color: '#1a1a1a' }}>Score Breakdown</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+        <div className="result-grid-two">
           <SubScoreCard label="📝 Content Quality" score={result.contentScore} />
           <SubScoreCard label="🎯 Impact & Achievements" score={result.impactScore} />
           <SubScoreCard label="🔑 Keyword Density" score={result.keywordScore} />

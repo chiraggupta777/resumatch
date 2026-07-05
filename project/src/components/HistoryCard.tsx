@@ -73,12 +73,9 @@ export default function HistoryCard({ item, onDelete }: HistoryCardProps) {
       {/* Header row */}
       <button
         onClick={() => setExpanded((p) => !p)}
+        className="history-card-button"
         style={{
-          width: '100%',
-          padding: '18px 20px',
-          display: 'flex',
           alignItems: 'center',
-          gap: 12,
           background: 'none',
           border: 'none',
           cursor: 'pointer',
@@ -108,7 +105,7 @@ export default function HistoryCard({ item, onDelete }: HistoryCardProps) {
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <div style={{
             padding: '4px 12px',
             borderRadius: 999,
@@ -170,7 +167,7 @@ function MatchBody({ item }: { item: MatchResult }) {
       {/* ATS Keywords */}
       <div>
         <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#9ca3af' }}>ATS Keywords</p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
           <div>
             <p style={{ margin: '0 0 6px', fontSize: 11, color: '#64748b' }}>Found</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>

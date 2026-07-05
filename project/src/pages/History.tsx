@@ -88,7 +88,7 @@ export default function History() {
   return (
     <div style={{ backgroundColor: '#f0efea', minHeight: '100vh' }}>
       <Navbar />
-      <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 24px' }}>
+      <div className="page-shell history-page-shell">
 <div style={{ marginBottom: 28, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div>
           <h1 style={{ margin: '0 0 6px', fontSize: 26, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.5px' }}>
@@ -126,6 +126,8 @@ export default function History() {
           border: '1px solid #e2e8f0',
           borderRadius: 10,
           width: 'fit-content',
+          flexWrap: 'wrap',
+          maxWidth: '100%',
         }}>
           <FilterTab active={filter === 'all'} onClick={() => setFilter('all')}>All</FilterTab>
           <FilterTab active={filter === 'match'} onClick={() => setFilter('match')}>Resume Matcher</FilterTab>
