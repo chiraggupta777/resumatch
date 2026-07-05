@@ -94,12 +94,52 @@ export default function AuthPage({ mode }: Props) {
   const handleGoogle = async () => {
     setGoogleLoading(true);
     try {
-      const res = await api.post('/api/auth/google', { googleToken: 'mock-token' });
-      login(res.data.token, res.data.user);
-      navigate('/dashboard');
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+      if (!clientId) {
+        setServerError('Missing VITE_GOOGLE_CLIENT_ID in frontend environment');
+        setGoogleLoading(false);
+        return;
+      }
+
+      // Load Google Identity Services script if needed
+      if (!(window as any).google) {
+        await new Promise<void>((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://accounts.google.com/gsi/client';
+          s.async = true;
+          s.defer = true;
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error('Failed to load Google SDK'));
+          document.head.appendChild(s);
+        });
+      }
+
+      // Initialize handler and prompt; callback receives the ID token in `credential`
+      (window as any).google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (response: any) => {
+          const idToken = response?.credential;
+          if (!idToken) {
+            setServerError('Google sign-in failed: no credential returned');
+            setGoogleLoading(false);
+            return;
+          }
+          try {
+            const res = await api.post('/api/auth/google', { googleToken: idToken });
+            login(res.data.token, res.data.user);
+            navigate('/dashboard');
+          } catch (err: any) {
+            setServerError(err.response?.data?.error || err.response?.data?.message || 'Google sign-in failed. Please try again.');
+          } finally {
+            setGoogleLoading(false);
+          }
+        }
+      });
+
+      // Show the one-tap / credential prompt. The callback above will handle the result.
+      (window as any).google.accounts.id.prompt();
     } catch (err: any) {
-      setServerError(err.response?.data?.message || 'Google sign-in failed. Please try again.');
-    } finally {
+      setServerError(err.message || 'Google sign-in failed. Please try again.');
       setGoogleLoading(false);
     }
   };
